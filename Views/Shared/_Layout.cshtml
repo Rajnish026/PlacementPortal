@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Placement & Internship Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100 bg-body-tertiary">
+    <!-- Main Navigation Bar -->
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-xs py-2">
+            <div class="container-fluid px-3 px-xl-4 px-xxl-5 container-constrained">
+                <a class="navbar-brand d-flex align-items-center fw-bold text-dark fs-5 py-0" asp-controller="Home" asp-action="Index">
+                    <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-3 p-2 me-2" style="width: 36px; height: 36px;">
+                        <i class="bi bi-briefcase-fill"></i>
+                    </span>
+                    <span>Placement<span class="text-primary">Portal</span></span>
+                </a>
+
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium px-2 px-xl-3 text-secondary" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door me-1"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium px-2 px-xl-3 text-secondary" asp-controller="Jobs" asp-action="Index">
+                                <i class="bi bi-grid me-1"></i> Jobs & Internships
+                            </a>
+                        </li>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole("Student"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-medium px-2 text-primary" asp-controller="Student" asp-action="Index">
+                                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fw-medium px-2 text-secondary" asp-controller="Student" asp-action="MyApplications">
+                                        <i class="bi bi-clock-history me-1"></i> My Applications
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fw-medium px-2 text-danger fw-semibold" asp-controller="Admin" asp-action="Index">
+                                        <i class="bi bi-shield-lock me-1"></i> Admin
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fw-medium px-2 text-secondary" asp-controller="Admin" asp-action="Jobs">
+                                        <i class="bi bi-briefcase me-1"></i> Drives
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fw-medium px-2 text-secondary" asp-controller="Admin" asp-action="Applications">
+                                        <i class="bi bi-person-check me-1"></i> Applications
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fw-medium px-2 text-secondary" asp-controller="Admin" asp-action="Students">
+                                        <i class="bi bi-mortarboard me-1"></i> Students
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <!-- User Account / Authentication Links -->
+                    <div class="d-flex align-items-center gap-2">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="dropdown">
+                                <button class="btn btn-light bg-white border dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-2 px-md-3 py-1 shadow-xs" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                                        <i class="bi bi-person-fill small"></i>
+                                    </div>
+                                    <span class="fw-semibold small text-truncate" style="max-width: 120px;">@User.Identity.Name</span>
+                                    <span class="badge @(User.IsInRole("Admin") ? "bg-danger" : "bg-primary") small" style="font-size: 0.65rem;">
+                                        @(User.IsInRole("Admin") ? "ADMIN" : "STUDENT")
+                                    </span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2">
+                                    @if (User.IsInRole("Student"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2 small" asp-controller="Student" asp-action="Index">
+                                                <i class="bi bi-speedometer2 me-2 text-primary"></i> Dashboard Overview
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2 small" asp-controller="Student" asp-action="MyApplications">
+                                                <i class="bi bi-clock-history me-2 text-primary"></i> My Applications
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2 small" asp-controller="Student" asp-action="Profile">
+                                                <i class="bi bi-person-gear me-2 text-primary"></i> Profile Settings
+                                            </a>
+                                        </li>
+                                    }
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item py-2 small" asp-controller="Admin" asp-action="Index">
+                                                <i class="bi bi-speedometer2 me-2 text-danger"></i> Admin Dashboard
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2 small" asp-controller="Admin" asp-action="Jobs">
+                                                <i class="bi bi-briefcase me-2 text-danger"></i> Manage Drives
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2 small" asp-controller="Admin" asp-action="Applications">
+                                                <i class="bi bi-person-check me-2 text-danger"></i> Candidate Applications
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2 small" asp-controller="Admin" asp-action="Students">
+                                                <i class="bi bi-mortarboard me-2 text-danger"></i> Student Directory
+                                            </a>
+                                        </li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-2">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger w-100 rounded-2 text-start">
+                                                <i class="bi bi-box-arrow-right me-1"></i> Sign Out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-link text-decoration-none text-dark fw-medium px-3">
+                                Sign In
+                            </a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-primary rounded-pill px-3 py-1 fw-medium shadow-xs">
+                                <i class="bi bi-person-plus me-1"></i> Register
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Notification Toast / Flash Alerts -->
+    <div class="container mt-3">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm rounded-3 d-flex align-items-center" role="alert">
+                <i class="bi bi-check-circle-fill fs-5 me-2 text-success"></i>
+                <div class="flex-grow-1">@TempData["SuccessMessage"]</div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill fs-5 me-2 text-danger"></i>
+                <div class="flex-grow-1">@TempData["ErrorMessage"]</div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show border-0 shadow-sm rounded-3 d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle-fill fs-5 me-2 text-info"></i>
+                <div class="flex-grow-1">@TempData["InfoMessage"]</div>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    <!-- Main Content Body -->
+    <div class="container-xl flex-grow-1 pb-4">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Master Footer -->
+    <footer class="bg-white border-top mt-auto py-4">
+        <div class="container-xl">
+            <div class="row align-items-center justify-content-between gy-3">
+                <div class="col-md-6 text-center text-md-start">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-1">
+                        <i class="bi bi-briefcase-fill text-primary me-2"></i>
+                        <span class="fw-bold text-dark">Placement & Internship Portal</span>
+                    </div>
+                    <p class="text-muted small mb-0">Designed for college campus recruitments, corporate drives, and student career development.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <div class="small text-muted">
+                        <span>&copy; @DateTime.UtcNow.Year - PlacementPortal | Department of Training & Placement</span>
+                    </div>
+                    <div class="small mt-1">
+                        <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted me-3">Home</a>
+                        <a asp-controller="Jobs" asp-action="Index" class="text-decoration-none text-muted me-3">Drives</a>
+                        <a asp-controller="Account" asp-action="Login" class="text-decoration-none text-muted">Portal Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

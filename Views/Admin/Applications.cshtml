@@ -1,0 +1,298 @@
+@model ApplicationManagementViewModel
+@{
+    ViewData["Title"] = "Manage Candidate Applications";
+}
+
+<div class="py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom gap-2">
+        <div>
+            <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill small fw-semibold mb-2">
+                <i class="bi bi-people-fill me-1"></i> Placement Screening
+            </span>
+            <h2 class="h3 fw-bold mb-1">Student Placement Applications</h2>
+            <p class="text-muted mb-0 small">Review candidate qualifications, update application review statuses, and provide feedback</p>
+        </div>
+        <div class="mt-2 mt-md-0 d-flex flex-wrap gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+            <a asp-action="Jobs" class="btn btn-primary rounded-pill px-3 shadow-xs">
+                <i class="bi bi-briefcase me-1"></i> Manage Drives
+            </a>
+        </div>
+    </div>
+
+    <!-- Metrics Bar (5 Equal Columns on Laptop/Desktop) -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-lg-5 g-2 mb-4">
+        <div class="col">
+            <div class="card border-0 shadow-xs rounded-3 p-3 bg-white text-center h-100">
+                <span class="text-muted small">Total</span>
+                <span class="fw-bold fs-5 text-dark">@Model.TotalCount</span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-xs rounded-3 p-3 bg-white text-center h-100">
+                <span class="text-muted small">Pending Review</span>
+                <span class="fw-bold fs-5 text-warning">@Model.PendingCount</span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-xs rounded-3 p-3 bg-white text-center h-100">
+                <span class="text-muted small">Shortlisted</span>
+                <span class="fw-bold fs-5 text-primary">@Model.ShortlistedCount</span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-xs rounded-3 p-3 bg-white text-center h-100">
+                <span class="text-muted small">Selected / Offers</span>
+                <span class="fw-bold fs-5 text-success">@Model.SelectedCount</span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card border-0 shadow-xs rounded-3 p-3 bg-white text-center h-100">
+                <span class="text-muted small">Rejected</span>
+                <span class="fw-bold fs-5 text-danger">@Model.RejectedCount</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 mb-4">
+        <form method="get" asp-action="Applications">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold text-muted">Filter by Status</label>
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="All" selected="@(Model.SelectedStatus == "All")">All Statuses</option>
+                        <option value="Pending" selected="@(Model.SelectedStatus == "Pending")">Pending</option>
+                        <option value="Under Review" selected="@(Model.SelectedStatus == "Under Review")">Under Review</option>
+                        <option value="Shortlisted" selected="@(Model.SelectedStatus == "Shortlisted")">Shortlisted</option>
+                        <option value="Selected" selected="@(Model.SelectedStatus == "Selected")">Selected</option>
+                        <option value="Rejected" selected="@(Model.SelectedStatus == "Rejected")">Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold text-muted">Filter by Drive / Company</label>
+                    <select name="jobId" class="form-select form-select-sm">
+                        <option value="">All Recruitment Drives</option>
+                        @foreach (var job in Model.AvailableJobListings)
+                        {
+                            <option value="@job.Id" selected="@(Model.SelectedJobId == job.Id)">
+                                @job.Title (@job.CompanyName)
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-sm btn-primary w-100 rounded-3 text-nowrap">
+                        <i class="bi bi-funnel me-1"></i> Apply Filter
+                    </button>
+                    <a asp-action="Applications" class="btn btn-sm btn-outline-secondary rounded-3 text-nowrap" title="Clear Filters">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Applications Table -->
+    @if (Model.Applications.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 table-min-width-lg">
+                    <thead class="table-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3">Candidate</th>
+                            <th class="py-3">Applied Drive</th>
+                            <th class="py-3">Applied On</th>
+                            <th class="py-3">Current Status</th>
+                            <th class="py-3">Update Status</th>
+                            <th class="pe-4 py-3 text-end">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.Applications)
+                        {
+                            var student = app.User!;
+                            var job = app.JobListing!;
+
+                            string badgeClass = app.Status switch
+                            {
+                                "Selected" => "bg-success text-white",
+                                "Shortlisted" => "bg-primary text-white",
+                                "Under Review" => "bg-info bg-opacity-25 text-dark fw-semibold",
+                                "Rejected" => "bg-danger text-white",
+                                _ => "bg-secondary bg-opacity-10 text-secondary border"
+                            };
+
+                            <tr>
+                                <!-- Candidate Info -->
+                                <td class="ps-4 py-3">
+                                    <div class="fw-bold text-dark fs-6">@student.FullName</div>
+                                    <div class="text-primary small fw-semibold">
+                                        <i class="bi bi-card-text me-1"></i> Roll: @student.RollNumber
+                                    </div>
+                                    <div class="text-muted small">
+                                        @(student.Department ?? "N/A") | 
+                                        <strong class="text-dark">@(student.Cgpa.HasValue ? $"{student.Cgpa.Value:F2} CGPA" : "CGPA Pending")</strong>
+                                    </div>
+                                    @if (!string.IsNullOrWhiteSpace(student.ResumeUrl))
+                                    {
+                                        <div class="mt-1">
+                                            <a href="@student.ResumeUrl" target="_blank" class="badge bg-light text-primary border text-decoration-none small">
+                                                <i class="bi bi-file-earmark-pdf me-1"></i> View Resume
+                                            </a>
+                                        </div>
+                                    }
+                                </td>
+
+                                <!-- Applied Drive -->
+                                <td>
+                                    <div class="fw-bold text-dark">@job.Title</div>
+                                    <div class="text-muted small">
+                                        <span class="text-primary fw-semibold">@job.CompanyName</span> &bull; 
+                                        <span class="badge @(job.JobType == "Internship" ? "bg-info bg-opacity-10 text-info" : "bg-success bg-opacity-10 text-success") small">
+                                            @job.JobType
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <!-- Applied Date -->
+                                <td class="small text-secondary">
+                                    <div>@app.AppliedAt.ToString("dd MMM yyyy")</div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">@app.AppliedAt.ToString("hh:mm tt")</div>
+                                </td>
+
+                                <!-- Current Status -->
+                                <td>
+                                    <span class="badge @badgeClass rounded-pill px-3 py-1">
+                                        @app.Status
+                                    </span>
+                                    @if (!string.IsNullOrWhiteSpace(app.AdminRemarks))
+                                    {
+                                        <div class="text-muted small mt-1" style="font-size: 0.75rem; max-width: 150px;">
+                                            <i class="bi bi-chat-quote me-1"></i> @app.AdminRemarks
+                                        </div>
+                                    }
+                                </td>
+
+                                <!-- Status Updater Form -->
+                                <td>
+                                    <form asp-action="UpdateApplicationStatus" method="post" class="d-flex align-items-center gap-1">
+                                        <input type="hidden" name="applicationId" value="@app.Id" />
+                                        <select name="status" class="form-select form-select-sm" style="width: 135px;">
+                                            <option value="Pending" selected="@(app.Status == "Pending")">Pending</option>
+                                            <option value="Under Review" selected="@(app.Status == "Under Review")">Under Review</option>
+                                            <option value="Shortlisted" selected="@(app.Status == "Shortlisted")">Shortlisted</option>
+                                            <option value="Selected" selected="@(app.Status == "Selected")">Selected</option>
+                                            <option value="Rejected" selected="@(app.Status == "Rejected")">Rejected</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary" title="Save Status">
+                                            <i class="bi bi-check2"></i>
+                                        </button>
+                                    </form>
+                                </td>
+
+                                <!-- Details Modal Trigger -->
+                                <td class="pe-4 text-end">
+                                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#appModal-@app.Id">
+                                        <i class="bi bi-eye me-1"></i> Review
+                                    </button>
+
+                                    <!-- Application Review Modal -->
+                                    <div class="modal fade" id="appModal-@app.Id" tabindex="-1" aria-labelledby="modalLabel-@app.Id" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered text-start">
+                                            <div class="modal-content border-0 shadow rounded-4">
+                                                <div class="modal-header border-bottom">
+                                                    <h5 class="modal-title fw-bold" id="modalLabel-@app.Id">
+                                                        Candidate Application Review
+                                                    </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body p-4">
+                                                    <!-- Candidate Details -->
+                                                    <div class="mb-3 pb-3 border-bottom">
+                                                        <h6 class="fw-bold text-dark mb-2">Student Profile</h6>
+                                                        <div class="row g-2 small">
+                                                            <div class="col-6 text-muted">Full Name: <strong class="text-dark d-block">@student.FullName</strong></div>
+                                                            <div class="col-6 text-muted">Roll Number: <strong class="text-primary d-block">@student.RollNumber</strong></div>
+                                                            <div class="col-6 text-muted">Email: <strong class="text-dark d-block">@student.Email</strong></div>
+                                                            <div class="col-6 text-muted">Phone: <strong class="text-dark d-block">@(student.PhoneNumber ?? "Not provided")</strong></div>
+                                                            <div class="col-6 text-muted">Department: <strong class="text-dark d-block">@(student.Department ?? "N/A")</strong></div>
+                                                            <div class="col-6 text-muted">CGPA: <strong class="text-success d-block">@(student.Cgpa.HasValue ? $"{student.Cgpa.Value:F2}" : "N/A")</strong></div>
+                                                            <div class="col-12 text-muted">Skills: <strong class="text-dark d-block">@(student.Skills ?? "None listed")</strong></div>
+                                                            @if (!string.IsNullOrWhiteSpace(student.ResumeUrl))
+                                                            {
+                                                                <div class="col-12 mt-2">
+                                                                    <a href="@student.ResumeUrl" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">
+                                                                        <i class="bi bi-file-earmark-pdf me-1"></i> Open Online Resume
+                                                                    </a>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Student Cover Note -->
+                                                    <div class="mb-3 pb-3 border-bottom">
+                                                        <h6 class="fw-bold text-dark mb-1">Student Statement of Interest</h6>
+                                                        <p class="small text-muted mb-0 fst-italic">
+                                                            @(string.IsNullOrWhiteSpace(app.CoverNote) ? "No statement provided with application." : app.CoverNote)
+                                                        </p>
+                                                    </div>
+
+                                                    <!-- Update Form inside Modal -->
+                                                    <form asp-action="UpdateApplicationStatus" method="post">
+                                                        <input type="hidden" name="applicationId" value="@app.Id" />
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold text-muted">Decision / Application Status</label>
+                                                            <select name="status" class="form-select">
+                                                                <option value="Pending" selected="@(app.Status == "Pending")">Pending</option>
+                                                                <option value="Under Review" selected="@(app.Status == "Under Review")">Under Review</option>
+                                                                <option value="Shortlisted" selected="@(app.Status == "Shortlisted")">Shortlisted</option>
+                                                                <option value="Selected" selected="@(app.Status == "Selected")">Selected (Offer Made)</option>
+                                                                <option value="Rejected" selected="@(app.Status == "Rejected")">Rejected</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold text-muted">Placement Remarks / Feedback (Visible to Student)</label>
+                                                            <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Cleared Technical Round 1; shortlisted for final interview.">@app.AdminRemarks</textarea>
+                                                        </div>
+
+                                                        <div class="d-grid">
+                                                            <button type="submit" class="btn btn-primary rounded-pill fw-semibold">
+                                                                <i class="bi bi-check2-circle me-1"></i> Save Status & Remarks
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white my-3">
+            <div class="text-muted mb-3"><i class="bi bi-search fs-1"></i></div>
+            <h5 class="fw-bold text-dark mb-2">No Applications Found</h5>
+            <p class="text-muted mx-auto mb-4" style="max-width: 450px;">
+                No candidate applications match the selected filter criteria. Try changing the status filter or choosing another drive.
+            </p>
+            <div>
+                <a asp-action="Applications" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
+                </a>
+            </div>
+        </div>
+    }
+</div>

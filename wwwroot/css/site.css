@@ -1,0 +1,178 @@
+/* Placement & Internship Portal - Responsive Stylesheet */
+
+:root {
+    --bs-primary: #2563eb;
+    --bs-primary-rgb: 37, 99, 235;
+    --bs-font-sans-serif: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    font-family: var(--bs-font-sans-serif);
+    color: #1e293b;
+    background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* Responsive Utilities & Shadows */
+.shadow-xs {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-sm {
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.08), 0 1px 4px -1px rgba(15, 23, 42, 0.04) !important;
+}
+
+.transition {
+    transition: all 0.2s ease-in-out;
+}
+
+.hover-shadow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Form Controls */
+.form-control, .form-select, .input-group-text {
+    border-color: #e2e8f0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Primary Button Styling */
+.btn-primary {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+/* Text Truncation and Line Clamping */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Responsive Fluid Typography */
+.hero-title {
+    font-size: clamp(1.75rem, 3vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+}
+
+.page-title {
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+/* Table Responsive Scrolling & Sleek Scrollbar */
+.table-responsive {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Predictable minimum widths for complex data tables on smaller screens */
+.table-min-width-md {
+    min-width: 680px;
+}
+
+.table-min-width-lg {
+    min-width: 860px;
+}
+
+.table-min-width-xl {
+    min-width: 960px;
+}
+
+/* Responsive Sticky Sidebar for Job Details */
+.sticky-sidebar-card {
+    position: sticky;
+    top: 76px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.sticky-sidebar-card::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sticky-sidebar-card::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+}
+
+/* Navbar Enhancements for 1280px & 1366px Laptop screens */
+.navbar-nav .nav-link {
+    white-space: nowrap;
+    font-size: 0.925rem;
+}
+
+@media (min-width: 992px) and (max-width: 1399px) {
+    .navbar-nav .nav-link {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        font-size: 0.875rem;
+    }
+    
+    .navbar-brand span {
+        font-size: 1.05rem;
+    }
+}
+
+/* Responsive Height Adjustments for 720p / 768p Laptop Screens */
+@media (max-height: 768px) {
+    .py-5 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+    
+    .py-4 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .mb-4 {
+        margin-bottom: 1rem !important;
+    }
+}
+
+/* Max Container Constraints on 1920x1080 to prevent excessive empty space */
+.container-constrained {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}

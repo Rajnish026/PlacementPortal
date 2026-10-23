@@ -1,0 +1,134 @@
+@model IEnumerable<JobListing>
+@{
+    ViewData["Title"] = "Manage Campus Job Drives";
+    var currentFilter = ViewData["CurrentStatusFilter"]?.ToString() ?? "All";
+}
+
+<div class="py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom gap-2">
+        <div>
+            <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill small fw-semibold mb-2">
+                <i class="bi bi-gear-fill me-1"></i> Admin Portal
+            </span>
+            <h2 class="h3 fw-bold mb-1">Campus Placement & Internship Drives</h2>
+            <p class="text-muted mb-0 small">Create new recruitment postings, edit eligibility parameters, and manage active status</p>
+        </div>
+        <div class="mt-2 mt-md-0 d-flex flex-wrap gap-2">
+            <a asp-action="CreateJob" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold">
+                <i class="bi bi-plus-circle me-1"></i> Post New Drive
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Status Filter Buttons -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+        <div class="btn-group shadow-xs rounded-pill" role="group">
+            <a asp-action="Jobs" asp-route-status="All" class="btn btn-sm @(currentFilter == "All" ? "btn-primary" : "btn-outline-secondary")">
+                All Drives (@Model.Count())
+            </a>
+            <a asp-action="Jobs" asp-route-status="Active" class="btn btn-sm @(currentFilter == "Active" ? "btn-primary" : "btn-outline-secondary")">
+                Active Only
+            </a>
+            <a asp-action="Jobs" asp-route-status="Inactive" class="btn btn-sm @(currentFilter == "Inactive" ? "btn-primary" : "btn-outline-secondary")">
+                Deactivated / Concluded
+            </a>
+        </div>
+
+        <div class="small text-muted">
+            <i class="bi bi-info-circle me-1"></i> Deactivating stops new student applications while preserving existing applicant history.
+        </div>
+    </div>
+
+    <!-- Jobs Table -->
+    <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 table-min-width-lg">
+                <thead class="table-light text-muted small text-uppercase">
+                    <tr>
+                        <th class="ps-4 py-3">Role & Company</th>
+                        <th class="py-3">Type</th>
+                        <th class="py-3">Location & Package</th>
+                        <th class="py-3">Deadline</th>
+                        <th class="py-3 text-center">Applicants</th>
+                        <th class="py-3">Status</th>
+                        <th class="pe-4 py-3 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var job in Model)
+                    {
+                        var isExpired = job.Deadline.Date < DateTime.Today;
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="fw-bold text-dark fs-6">@job.Title</div>
+                                <div class="text-primary small fw-semibold">
+                                    <i class="bi bi-building me-1"></i> @job.CompanyName
+                                </div>
+                                <div class="text-muted small">
+                                    Cutoff: <span class="fw-semibold text-dark">@(job.MinCgpa > 0 ? $"{job.MinCgpa:F1} CGPA" : "No Bar")</span>
+                                    | <span class="text-secondary">@job.EligibleDepartments</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge @(job.JobType == "Internship" ? "bg-info bg-opacity-10 text-info border border-info-subtle" : "bg-success bg-opacity-10 text-success border border-success-subtle") rounded-pill px-2 py-1 small">
+                                    @job.JobType
+                                </span>
+                            </td>
+                            <td class="small">
+                                <div class="text-dark"><i class="bi bi-geo-alt me-1 text-danger"></i> @job.Location</div>
+                                <div class="text-success fw-bold"><i class="bi bi-cash-stack me-1"></i> @(job.SalaryOrStipend ?? "As per policy")</div>
+                            </td>
+                            <td class="small">
+                                <div class="text-dark">@job.Deadline.ToString("dd MMM yyyy")</div>
+                                @if (isExpired)
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill small">Deadline Passed</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">@((job.Deadline.Date - DateTime.Today).Days) days left</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Applications" asp-route-jobId="@job.Id" class="badge bg-light text-primary border text-decoration-none px-3 py-2 fs-6" title="View applicants for this drive">
+                                    <i class="bi bi-people me-1"></i> @job.JobApplications.Count
+                                </a>
+                            </td>
+                            <td>
+                                @if (job.IsActive && !isExpired)
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle rounded-pill px-3 py-1">Active</span>
+                                }
+                                else if (!job.IsActive)
+                                {
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-3 py-1">Deactivated</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning bg-opacity-10 text-dark border border-warning-subtle rounded-pill px-3 py-1">Expired</span>
+                                }
+                            </td>
+                            <td class="pe-4 text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="EditJob" asp-route-id="@job.Id" class="btn btn-outline-primary rounded-start-pill px-3" title="Edit drive details">
+                                        <i class="bi bi-pencil me-1"></i> Edit
+                                    </a>
+                                    <form asp-action="ToggleJobStatus" asp-route-id="@job.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to @(job.IsActive ? "deactivate" : "activate") the drive for @job.Title?');">
+                                        <button type="submit" class="btn @(job.IsActive ? "btn-outline-warning" : "btn-outline-success") rounded-end-pill px-3" title="@(job.IsActive ? "Deactivate drive" : "Activate drive")">
+                                            <i class="bi @(job.IsActive ? "bi-pause-circle" : "bi-play-circle") me-1"></i>
+                                            @(job.IsActive ? "Deactivate" : "Activate")
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

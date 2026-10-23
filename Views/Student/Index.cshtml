@@ -1,0 +1,231 @@
+@model StudentDashboardViewModel
+@{
+    ViewData["Title"] = "Student Dashboard";
+    var student = Model.Student;
+}
+
+<div class="py-4">
+    <!-- Welcome Header -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill fw-semibold mb-2">
+                <i class="bi bi-mortarboard-fill me-1"></i> Student Placement Portal
+            </span>
+            <h2 class="h3 fw-bold mb-1">Welcome back, @student.FullName</h2>
+            <p class="text-muted mb-0 small">
+                Department of @(student.Department ?? "Not specified") | Roll No: <span class="fw-bold text-dark">@student.RollNumber</span> | Class of @(student.GraduationYear?.ToString() ?? "2025")
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0 d-flex flex-wrap justify-content-md-end gap-2">
+            <a asp-action="Profile" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-person-gear me-1"></i> Edit Profile
+            </a>
+            <a asp-controller="Jobs" asp-action="Index" class="btn btn-primary rounded-pill px-3 shadow-xs">
+                <i class="bi bi-search me-1"></i> Explore Drives
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 me-3">
+                        <i class="bi bi-send fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Total Applied</div>
+                        <h4 class="fw-bold mb-0 text-dark">@Model.TotalApplicationsCount</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 me-3">
+                        <i class="bi bi-check2-circle fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Shortlisted / Selected</div>
+                        <h4 class="fw-bold mb-0 text-success">@Model.ShortlistedCount</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3 me-3">
+                        <i class="bi bi-hourglass-split fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Pending Review</div>
+                        <h4 class="fw-bold mb-0 text-dark">@Model.PendingCount</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 col-sm-6">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="d-flex align-items-center">
+                    <div class="bg-info bg-opacity-10 text-info rounded-3 p-3 me-3">
+                        <i class="bi bi-award fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small">Academic CGPA</div>
+                        <h4 class="fw-bold mb-0 text-dark">
+                            @(student.Cgpa.HasValue ? $"{student.Cgpa.Value:F2}" : "Not Added")
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Applications Table (Left Column) -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden h-100">
+                <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-clock-history text-primary me-2"></i> Recent Applications
+                    </h5>
+                    <a asp-action="MyApplications" class="text-primary small text-decoration-none fw-semibold">
+                        View All (@Model.TotalApplicationsCount) <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Applications.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 table-min-width-md">
+                                <thead class="table-light text-muted small text-uppercase">
+                                    <tr>
+                                        <th class="ps-4">Role & Company</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th class="pe-4 text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var app in Model.Applications.Take(5))
+                                    {
+                                        var job = app.JobListing!;
+                                        string statusClass = app.Status switch
+                                        {
+                                            "Selected" => "bg-success text-white",
+                                            "Shortlisted" => "bg-primary text-white",
+                                            "Under Review" => "bg-info bg-opacity-25 text-dark fw-semibold",
+                                            "Rejected" => "bg-danger text-white",
+                                            _ => "bg-secondary bg-opacity-10 text-secondary border"
+                                        };
+
+                                        <tr>
+                                            <td class="ps-4 py-3">
+                                                <div class="fw-bold text-dark">@job.Title</div>
+                                                <div class="text-primary small fw-semibold">@job.CompanyName</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge @(job.JobType == "Internship" ? "bg-info bg-opacity-10 text-info" : "bg-success bg-opacity-10 text-success") rounded-pill px-2 py-1 small">
+                                                    @job.JobType
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge @statusClass rounded-pill px-3 py-1">
+                                                    @app.Status
+                                                </span>
+                                            </td>
+                                            <td class="pe-4 text-end">
+                                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.Id" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                                    Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-5 text-center">
+                            <div class="text-muted mb-3"><i class="bi bi-inbox fs-1"></i></div>
+                            <h6 class="fw-bold text-dark mb-1">No Applications Yet</h6>
+                            <p class="text-muted small mb-3">Browse our active company drives to apply for your first placement opportunity.</p>
+                            <a asp-controller="Jobs" asp-action="Index" class="btn btn-primary rounded-pill btn-sm px-4">
+                                Browse Open Drives
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Quick Card (Right Column) -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <h5 class="fw-bold mb-0 text-dark">Placement Profile</h5>
+                    <a asp-action="Profile" class="btn btn-sm btn-outline-primary rounded-pill">
+                        <i class="bi bi-pencil me-1"></i> Edit
+                    </a>
+                </div>
+
+                <div class="mb-3">
+                    <div class="text-muted small">Registered Email</div>
+                    <div class="fw-semibold text-dark text-truncate">@student.Email</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="text-muted small">University Roll Number</div>
+                    <div class="fw-bold text-primary">@student.RollNumber</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="text-muted small">Contact Phone</div>
+                    <div class="fw-semibold text-dark">@(string.IsNullOrWhiteSpace(student.PhoneNumber) ? "Not provided" : student.PhoneNumber)</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="text-muted small">Technical Skills</div>
+                    <div class="small text-secondary">
+                        @if (!string.IsNullOrWhiteSpace(student.Skills))
+                        {
+                            <span class="fw-semibold text-dark">@student.Skills</span>
+                        }
+                        else
+                        {
+                            <span class="fst-italic text-muted">No skills added yet.</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="text-muted small">Online Resume / Link</div>
+                    @if (!string.IsNullOrWhiteSpace(student.ResumeUrl))
+                    {
+                        <a href="@student.ResumeUrl" target="_blank" class="small text-decoration-none fw-semibold text-primary d-inline-flex align-items-center">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> View Saved Resume <i class="bi bi-box-arrow-up-right ms-1 small"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="small fst-italic text-muted">Resume link pending.</span>
+                    }
+                </div>
+
+                <div class="mt-auto pt-3 border-top">
+                    <a asp-action="Profile" class="btn btn-light w-100 rounded-3 text-start small d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-shield-check text-success me-1"></i> Complete Profile Screening</span>
+                        <i class="bi bi-chevron-right text-muted"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

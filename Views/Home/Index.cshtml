@@ -1,0 +1,87 @@
+@{
+    ViewData["Title"] = "College Placement & Internship Portal";
+}
+
+<!-- Hero Section -->
+<div class="row align-items-center py-4 py-lg-5">
+    <div class="col-lg-7 text-center text-lg-start pe-lg-4 pe-xl-5">
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold mb-3">
+            <i class="bi bi-mortarboard me-1"></i> Training & Placement Cell
+        </span>
+        <h1 class="hero-title text-dark mb-3">
+            Connect Your Academic Potential With Top Industry Careers
+        </h1>
+        <p class="lead text-secondary mb-4 fs-6 fs-md-5">
+            The official college campus recruitment platform. Discover verified full-time job drives, paid summer internships, and kickstart your professional career.
+        </p>
+
+        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2 gap-sm-3 mb-4">
+            <a asp-controller="Jobs" asp-action="Index" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm fw-semibold fs-6">
+                <i class="bi bi-search me-1"></i> Browse Drives
+            </a>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg rounded-pill px-4 fw-semibold fs-6">
+                    <i class="bi bi-person-plus me-1"></i> Student Register
+                </a>
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-danger btn-lg rounded-pill px-4 fw-semibold fs-6">
+                    <i class="bi bi-shield-lock me-1"></i> Admin Console
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Student" asp-action="Index" class="btn btn-outline-primary btn-lg rounded-pill px-4 fw-semibold fs-6">
+                    <i class="bi bi-speedometer2 me-1"></i> Student Dashboard
+                </a>
+            }
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-3 gap-md-4 pt-2 text-muted small">
+            <div><i class="bi bi-shield-check text-success me-1"></i> Verified Recruiters</div>
+            <div><i class="bi bi-check2-circle text-primary me-1"></i> Direct Shortlisting</div>
+            <div><i class="bi bi-lock text-dark me-1"></i> Secure College Portal</div>
+        </div>
+    </div>
+
+    <div class="col-lg-5 mt-4 mt-lg-0">
+        <div class="card border-0 shadow rounded-4 bg-white p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-3">
+                <div class="fw-bold text-dark">Placement Drive Highlights</div>
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 small">Current Season</span>
+            </div>
+
+            <div class="d-flex align-items-center p-3 rounded-3 bg-light mb-3">
+                <div class="bg-primary text-white rounded-3 p-3 me-3">
+                    <i class="bi bi-graph-up-arrow fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Highest CTC Offered</div>
+                    <div class="fs-4 fw-bold text-dark">₹16.50 LPA</div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center p-3 rounded-3 bg-light mb-3">
+                <div class="bg-success text-white rounded-3 p-3 me-3">
+                    <i class="bi bi-briefcase fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Top Internship Stipend</div>
+                    <div class="fs-4 fw-bold text-dark">₹50,000 / mo</div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center p-3 rounded-3 bg-light">
+                <div class="bg-warning text-white rounded-3 p-3 me-3">
+                    <i class="bi bi-building fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Participating Recruiters</div>
+                    <div class="fs-4 fw-bold text-dark">Microsoft, Amazon, TCS, Deloitte +</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Data Privacy & Placement Policy";
+}
+
+<div class="py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-md-5">
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small fw-semibold mb-2 d-inline-block" style="width: fit-content;">
+                    <i class="bi bi-shield-check me-1"></i> Data Privacy Policy
+                </span>
+                <h2 class="fw-bold mb-3">Student Placement & Internship Portal Privacy Guidelines</h2>
+                <p class="text-secondary mb-4">
+                    The Training and Placement Cell is committed to maintaining the confidentiality, academic integrity, and security of all enrolled student profile data, contact information, and job application history.
+                </p>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <h6 class="fw-bold text-dark"><i class="bi bi-person-badge text-primary me-2"></i>Academic Verification</h6>
+                            <p class="small text-muted mb-0">
+                                College roll numbers, departments, passing years, and cumulative GPAs are maintained exclusively for campus recruitment eligibility verification.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <h6 class="fw-bold text-dark"><i class="bi bi-lock-fill text-success me-2"></i>Secure Authentication</h6>
+                            <p class="small text-muted mb-0">
+                                Passwords are cryptographic hashes produced via PBKDF2 with SHA-256 and unique 128-bit salts. Plain text passwords are never stored or logged.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <h6 class="fw-bold text-dark"><i class="bi bi-building-check text-warning me-2"></i>Recruiter Access Control</h6>
+                            <p class="small text-muted mb-0">
+                                Candidate resumes and profiles are shared strictly with authorized corporate recruitment partners whose drives the student has applied to.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 rounded-3 bg-light h-100">
+                            <h6 class="fw-bold text-dark"><i class="bi bi-shield-shaded text-danger me-2"></i>Role-Based Authorization</h6>
+                            <p class="small text-muted mb-0">
+                                Strict role-based isolation guarantees that students cannot view other candidates' applications or access administrative recruitment controls.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-top pt-4 mt-4 d-flex justify-content-between align-items-center">
+                    <span class="small text-muted">Department of Training & Placement &bull; Campus Recruitment Office</span>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4 btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
