@@ -38,7 +38,7 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// 5. Handle CLI admin account provisioning: dotnet run -- create-admin [--email ... --password ... --name ...]
+// 5. Handle CLI admin account provisioning: dotnet run -- create-admin [--email ... --name ...]
 if (args.Length > 0 && args[0].Equals("create-admin", StringComparison.OrdinalIgnoreCase))
 {
     using var adminScope = app.Services.CreateScope();
@@ -48,24 +48,31 @@ if (args.Length > 0 && args[0].Equals("create-admin", StringComparison.OrdinalIg
 
     string? name = null;
     string? email = null;
-    string? password = null;
 
     for (int i = 1; i < args.Length; i++)
     {
         if (args[i].Equals("--email", StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length) email = args[++i];
-        else if (args[i].Equals("--password", StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length) password = args[++i];
         else if (args[i].Equals("--name", StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length) name = args[++i];
+        else if (args[i].Equals("--password", StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine("[WARNING] Command-line password argument is disabled for security. Passwords must be entered via the hidden prompt.");
+            if (i + 1 < args.Length && !args[i + 1].StartsWith("--")) i++; // skip argument value if provided
+        }
+    }
+
+    if (string.IsNullOrWhiteSpace(name))
+    {
+        Console.Write("Enter Admin Full Name: ");
+        name = Console.ReadLine();
     }
 
     if (string.IsNullOrWhiteSpace(email))
     {
-        Console.Write("Enter Admin Full Name: ");
-        name = Console.ReadLine();
         Console.Write("Enter Admin Email Address: ");
         email = Console.ReadLine();
-        Console.Write("Enter Admin Password: ");
-        password = Console.ReadLine();
     }
+
+    var password = ReadHiddenPassword("Enter Admin Password: ");
 
     if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
     {
@@ -139,3 +146,38 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+static string ReadHiddenPassword(string prompt)
+{
+    Console.Write(prompt);
+
+    if (Console.IsInputRedirected)
+    {
+        return Console.ReadLine() ?? string.Empty;
+    }
+
+    var passwordBuilder = new System.Text.StringBuilder();
+    while (true)
+    {
+        var keyInfo = Console.ReadKey(intercept: true);
+        if (keyInfo.Key == ConsoleKey.Enter)
+        {
+            Console.WriteLine();
+            break;
+        }
+
+        if (keyInfo.Key == ConsoleKey.Backspace)
+        {
+            if (passwordBuilder.Length > 0)
+            {
+                passwordBuilder.Length--;
+            }
+        }
+        else if (!char.IsControl(keyInfo.KeyChar))
+        {
+            passwordBuilder.Append(keyInfo.KeyChar);
+        }
+    }
+
+    return passwordBuilder.ToString();
+}

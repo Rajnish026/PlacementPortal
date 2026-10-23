@@ -137,21 +137,23 @@ To comply with enterprise security practices, public registration **never** assi
 
 Create the initial administrator account via the built-in Command-Line Setup:
 
-### Interactive Prompt Mode:
 ```powershell
 dotnet run -- create-admin
 ```
-The CLI will securely prompt for:
-- Admin Full Name
-- Admin Email Address
-- Admin Password
 
-### Command-Line Arguments Mode:
+The CLI prompts for:
+- **Admin Full Name** (optional, defaults to "Placement Administrator" if left blank)
+- **Admin Email Address** (e.g. `admin@college.edu`)
+- **Admin Password** (entered via a **hidden console prompt** where keystrokes are masked to prevent exposure on-screen or in shell history)
+
+You can also optionally supply the name and email via CLI arguments while entering the password securely at the hidden prompt:
 ```powershell
-dotnet run -- create-admin --name "Placement Head" --email "admin@college.edu" --password "YourStrongPassword@2026"
+dotnet run -- create-admin --name "Placement Head" --email "admin@college.edu"
 ```
 
-*Note: If the email already exists as a student, the CLI securely promotes the user to the `Admin` role and updates their password hash.*
+> **Security Note:** Command-line password arguments are intentionally disabled to ensure credentials never persist in shell history or process arguments. Passwords are always entered via the hidden prompt and securely hashed using PBKDF2 with HMAC-SHA512.
+>
+> *Note: If the email already belongs to an existing user, the CLI securely promotes that user to the `Admin` role and updates their password hash.*
 
 ---
 
@@ -182,25 +184,33 @@ http://localhost:5247
 
 ---
 
-## Automated Testing Suite
+## Verification & Testing
 
-The project includes automated integration test scripts that exercise the full stack over HTTP with cookie sessions and antiforgery token parsing:
+The project is structured for easy verification and test validation using standard .NET CLI commands:
 
+### 1. Build Verification
+Verify compilation, type safety, EF Core configurations, and Razor view syntax:
 ```powershell
-# Phase 2: Authentication & Role-Based Access Control (9 tests)
-powershell -ExecutionPolicy Bypass -File scratch/test_phase2.ps1
-
-# Phase 3: Job Listings, Multi-Parameter Search & Filters (9 tests)
-powershell -ExecutionPolicy Bypass -File scratch/test_phase3.ps1
-
-# Phase 4: Student Profile Editing & Job Application Flow (9 tests)
-powershell -ExecutionPolicy Bypass -File scratch/test_phase4.ps1
-
-# Phase 5: Admin Panel, Drive CRUD, Deactivation & Status Updates (13 tests)
-powershell -ExecutionPolicy Bypass -File scratch/test_phase5.ps1
+dotnet build
 ```
 
-All 40 automated test scenarios pass with a 100% success rate.
+### 2. Admin Provisioning Verification
+Verify database seeding, migration integrity, and hidden password hashing:
+```powershell
+dotnet run -- create-admin
+```
+
+### 3. Application Execution & Functional Testing
+Launch the development server to verify end-to-end user workflows:
+```powershell
+dotnet run --launch-profile http
+```
+
+### Verified Functional Test Scenarios:
+- **Authentication & Authorization:** Student registration, unique roll/email constraint validation, PBKDF2 password hashing, secure cookie session handling, and role-based route protection (`[Authorize(Roles = "Admin")]`).
+- **Job Catalog & Search:** Live drive browsing, case-insensitive keyword search, filter combinations (job type, location, active status), and card responsive layouts.
+- **Student Profile & Application:** Profile updates with server-side validation, single-application enforcement (duplicate prevention), deadline validation, and application tracking under My Applications.
+- **Admin Management:** Drive creation, editing, soft deactivation, applicant list inspection, application status transitions (*Under Review*, *Shortlisted*, *Selected*, *Rejected*) with optional feedback notes, and student directory lookup.
 
 ---
 
