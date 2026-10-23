@@ -5,6 +5,7 @@
 ---
 
 ## Table of Contents
+
 1. [Project Overview](#project-overview)
 2. [Key Features](#key-features)
    - [Student Module](#student-module)
@@ -16,7 +17,7 @@
 5. [Installation & Setup](#installation--setup)
 6. [Secure Admin Account Creation](#secure-admin-account-creation)
 7. [Running the Application](#running-the-application)
-8. [Automated Testing Suite](#automated-testing-suite)
+8. [Verification & Testing](#verification--testing)
 9. [Project Structure](#project-structure)
 10. [Academic Submission Details](#academic-submission-details)
 
@@ -31,6 +32,7 @@ The **Student Placement & Internship Portal** streamlines college campus placeme
 ## Key Features
 
 ### Student Module
+
 - **Self-Registration & Authentication:** Secure account creation requiring college roll number, passing year, branch, and email with instant duplicate prevention.
 - **Student Placement Profile:** View and update personal academic profile, contact number, key technical skills, and resume/portfolio links. College roll number and email are verified and kept strictly read-only.
 - **One-Click Job Applications:** Logged-in students can apply to active drives with an optional cover note/statement of interest.
@@ -38,6 +40,7 @@ The **Student Placement & Internship Portal** streamlines college campus placeme
 - **My Applications Tracker:** Real-time personal tracker showing applied drives, dates, current review status (`Pending`, `Under Review`, `Shortlisted`, `Selected`, `Rejected`), and personal remarks from the placement cell.
 
 ### Job & Internship Catalog
+
 - **Unified Opportunities Catalog:** Responsive Bootstrap card layout displaying company name, role title, job type, work location, package/stipend, eligibility cutoff, and application deadline.
 - **Multi-Parameter Search & Filtering:**
   - Real-time keyword search across role titles and company names.
@@ -48,6 +51,7 @@ The **Student Placement & Internship Portal** streamlines college campus placeme
 - **Detailed Drive Specification:** Complete overview of roles, company overview, minimum CGPA eligibility cutoffs, eligible branches, and active application states.
 
 ### Admin Management Console
+
 - **Protected Access:** Restricted entirely via `[Authorize(Roles = "Admin")]`. Students and visitors attempting access are blocked and redirected to Access Denied.
 - **Dashboard KPI Metrics:** Real-time metric cards for:
   - Total Enrolled Students
@@ -66,13 +70,15 @@ The **Student Placement & Internship Portal** streamlines college campus placeme
 - **Candidate Student Directory:** Searchable directory showing student roll numbers, branches, CGPA badges, skills, and application counts.
 
 ### Security & Architecture
-- **Cryptographic Password Hashing:** Uses industry-standard PBKDF2 with HMAC-SHA256 and unique 128-bit cryptographically secure salts (`PasswordHasherService`). Plain-text passwords are never stored or logged.
+
+- **Cryptographic Password Hashing:** Powered by `PasswordHasherService` utilizing ASP.NET Core Identity's `PasswordHasher<User>`, implementing PBKDF2 with HMAC-SHA256, 128-bit cryptographically secure per-user salts, and a 256-bit subkey (ASP.NET Core Identity V3 format). Plain-text passwords are never stored or logged.
 - **No Hardcoded Credentials:** Zero hardcoded passwords or default admin seeds in source code or database migrations.
 - **Antiforgery Protection:** Every POST endpoint enforces ASP.NET Core `[ValidateAntiForgeryToken]`.
 - **Ownership Enforcement:** Students can only access and update their own profiles and view their own applications.
 - **Local Redirect Protection:** Safe login redirection preventing open-redirect phishing attacks.
 
 ### Responsive Modern UI Design
+
 - **Optimized for Common Laptop Displays:** Tailored specifically for default 100% zoom on 1280×720, 1366×768, 1440×900, and 1920×1080 screens.
 - **Fluid Typography:** Uses CSS `clamp()` for dynamic hero and section headers that scale seamlessly without overflowing or pushing CTAs offscreen.
 - **Constrained Layouts:** Custom container constraints and sticky sidebars (`max-height: calc(100vh - 96px); overflow-y: auto`) ensure drive overviews and action buttons remain reachable on short-viewport displays.
@@ -82,15 +88,15 @@ The **Student Placement & Internship Portal** streamlines college campus placeme
 
 ## Technology Stack
 
-| Layer | Technology |
-| :--- | :--- |
-| **Language** | C# 12 (.NET 8.0 LTS) |
-| **Framework** | ASP.NET Core 8.0 MVC |
-| **ORM / Data Access** | Entity Framework Core 8.0 (Code-First) |
-| **Database** | SQLite (`PlacementPortal.db`) |
-| **Frontend UI** | HTML5, CSS3, Bootstrap 5.3, Bootstrap Icons |
-| **Typography** | Google Fonts (*Plus Jakarta Sans*) |
-| **Authentication** | ASP.NET Core Cookie Authentication with Claims-based RBAC |
+| Layer                 | Technology                                                |
+| :-------------------- | :-------------------------------------------------------- |
+| **Language**          | C# 12 (.NET 8.0 LTS)                                      |
+| **Framework**         | ASP.NET Core 8.0 MVC                                      |
+| **ORM / Data Access** | Entity Framework Core 8.0 (Code-First)                    |
+| **Database**          | SQLite (`PlacementPortal.db`)                             |
+| **Frontend UI**       | HTML5, CSS3, Bootstrap 5.3, Bootstrap Icons               |
+| **Typography**        | Google Fonts (_Plus Jakarta Sans_)                        |
+| **Authentication**    | ASP.NET Core Cookie Authentication with Claims-based RBAC |
 
 ---
 
@@ -101,6 +107,7 @@ The **Student Placement & Internship Portal** streamlines college campus placeme
 - Optional IDE: Visual Studio 2022, Visual Studio Code (with C# Dev Kit), or JetBrains Rider.
 
 Verify your installed .NET SDK version:
+
 ```powershell
 dotnet --version
 # Expected: 8.0.xxx or higher
@@ -111,17 +118,20 @@ dotnet --version
 ## Installation & Setup
 
 1. **Clone the Repository:**
+
    ```powershell
    git clone https://github.com/Rajnish026/PlacementPortal.git
    cd PlacementPortal
    ```
 
 2. **Restore NuGet Packages:**
+
    ```powershell
    dotnet restore
    ```
 
 3. **Build the Solution:**
+
    ```powershell
    dotnet build
    ```
@@ -142,34 +152,39 @@ dotnet run -- create-admin
 ```
 
 The CLI prompts for:
+
 - **Admin Full Name** (optional, defaults to "Placement Administrator" if left blank)
 - **Admin Email Address** (e.g. `admin@college.edu`)
 - **Admin Password** (entered via a **hidden console prompt** where keystrokes are masked to prevent exposure on-screen or in shell history)
 
 You can also optionally supply the name and email via CLI arguments while entering the password securely at the hidden prompt:
+
 ```powershell
 dotnet run -- create-admin --name "Placement Head" --email "admin@college.edu"
 ```
 
-> **Security Note:** Command-line password arguments are intentionally disabled to ensure credentials never persist in shell history or process arguments. Passwords are always entered via the hidden prompt and securely hashed using PBKDF2 with HMAC-SHA512.
+> **Security Note:** Command-line password arguments are intentionally disabled to ensure credentials never persist in shell history or process arguments. Passwords are always entered via the hidden prompt and securely hashed using ASP.NET Core Identity's standard PBKDF2 with HMAC-SHA256.
 >
-> *Note: If the email already belongs to an existing user, the CLI securely promotes that user to the `Admin` role and updates their password hash.*
+> _Note: If the email already belongs to an existing user, the CLI securely promotes that user to the `Admin` role and updates their password hash._
 
 ---
 
 ## Running the Application
 
 Start the local web server:
+
 ```powershell
 dotnet run --launch-profile http
 ```
 
 Once started, open your browser and navigate to:
+
 ```
 http://localhost:5247
 ```
 
 ### Default Navigation Paths:
+
 - **Home / Landing:** `http://localhost:5247/`
 - **Browse Opportunities:** `http://localhost:5247/Jobs`
 - **Student Register:** `http://localhost:5247/Account/Register`
@@ -186,31 +201,40 @@ http://localhost:5247
 
 ## Verification & Testing
 
-The project is structured for easy verification and test validation using standard .NET CLI commands:
+The repository does not include a bundled automated test suite or external test runner scripts. Testing and verification are conducted using standard .NET CLI commands and manual interactive validation:
 
 ### 1. Build Verification
+
 Verify compilation, type safety, EF Core configurations, and Razor view syntax:
+
 ```powershell
 dotnet build
 ```
 
 ### 2. Admin Provisioning Verification
+
 Verify database seeding, migration integrity, and hidden password hashing:
+
 ```powershell
 dotnet run -- create-admin
 ```
 
-### 3. Application Execution & Functional Testing
-Launch the development server to verify end-to-end user workflows:
+### 3. Application Execution & Manual Testing
+
+Launch the development server to interactively test user and administrative flows in the browser:
+
 ```powershell
 dotnet run --launch-profile http
 ```
 
-### Verified Functional Test Scenarios:
-- **Authentication & Authorization:** Student registration, unique roll/email constraint validation, PBKDF2 password hashing, secure cookie session handling, and role-based route protection (`[Authorize(Roles = "Admin")]`).
+### Documented Functional Test Scenarios (Previously Validated):
+
+The following end-to-end scenarios were systematically tested and confirmed during development:
+
+- **Authentication & Authorization:** Student registration, unique roll/email constraint validation, ASP.NET Core Identity PBKDF2 password hashing, secure cookie session handling, and role-based route protection (`[Authorize(Roles = "Admin")]`).
 - **Job Catalog & Search:** Live drive browsing, case-insensitive keyword search, filter combinations (job type, location, active status), and card responsive layouts.
 - **Student Profile & Application:** Profile updates with server-side validation, single-application enforcement (duplicate prevention), deadline validation, and application tracking under My Applications.
-- **Admin Management:** Drive creation, editing, soft deactivation, applicant list inspection, application status transitions (*Under Review*, *Shortlisted*, *Selected*, *Rejected*) with optional feedback notes, and student directory lookup.
+- **Admin Management:** Drive creation, editing, soft deactivation, applicant list inspection, application status transitions (_Under Review_, _Shortlisted_, _Selected_, _Rejected_) with optional feedback notes, and student directory lookup.
 
 ---
 
